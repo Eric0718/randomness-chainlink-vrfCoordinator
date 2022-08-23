@@ -16,14 +16,14 @@ contract RandomVRFCoordinatorV2 is  VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface private immutable _vrfCoordinator;
 
     // The default is 3, but you can set this higher.
-    uint16 public  REQUEST_CONFIRMATIONS = 100;
+    uint16 public  REQUEST_CONFIRMATIONS = 10;
 
     // retrieve NUM_WORDS random values in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-    uint32 public NUM_WORDS = 500;
+    uint32 public NUM_WORDS = 100;
 
     //keep the randomWords from fulfillRandomWords() function.
-    uint256[][] public _randomWords;
+    uint256[] public _randomWords = new uint256[](0);
 
 
     event RequestedRandomWords(uint256 requestId ,address requester);
@@ -33,10 +33,7 @@ contract RandomVRFCoordinatorV2 is  VRFConsumerBaseV2 {
     }
 
     function fulfillRandomWords(uint256, uint256[] memory randomWords) internal override{
-        // for(uint256 i = 0;i < randomWords.length;i++){
-        //     _randomWords.push(randomWords[i]);
-        // }
-        _randomWords.push(randomWords);
+        _randomWords = randomWords;
     }
 
     function requestRandomWords()public{
@@ -62,9 +59,7 @@ contract RandomVRFCoordinatorV2 is  VRFConsumerBaseV2 {
 
     function getMaxLengthAndNum()public view returns(uint256,uint256){
         uint256 lth = _randomWords.length;
-        uint256[] memory tmpArray = _randomWords[lth-1];
-        uint256 maxNum = tmpArray[tmpArray.length-1];
-
-        return (lth,maxNum);
+        uint256 lastNum = _randomWords[lth-1];
+        return (lth,lastNum);
     }
 }
